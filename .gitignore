@@ -1,0 +1,5 @@
+# Bỏ qua Thư mục Môi trường ảo
+venv/
+.venv/
+env/
+.env/
