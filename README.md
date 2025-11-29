@@ -8,6 +8,8 @@ python -m venv venv
 venv\Scripts\activate
 # Cài môi trường:
 pip install -r requirements.txt
+# Thoát môi trường ảo 
+deactivate
 
 luồng hoạt động
                    [Câu tiếng Việt]
