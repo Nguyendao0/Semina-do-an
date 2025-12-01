@@ -17,5 +17,9 @@ def analyze(text: str):
     # 3. PhoBERT classify → trả về {'label': 'POSITIVE', 'score': 0.99}
     result = clf.predict(processed)
 
-    # 4. Return result (có thể thêm postprocess sau)
-    return result
+    # 4. Transform result để match app.py expectation
+    return {
+        "text": text,
+        "sentiment": result.get("label", "NEUTRAL"),
+        "score": result.get("score", 0.0)
+    }

@@ -20,6 +20,7 @@ def validate_input(text: str):
     
     if all(c in "!?.,;: \n\t" for c in text.strip()):
         return False, "Vui lòng nhập text có ý nghĩa, không phải toàn dấu câu!"
+    
     return True, None
 
 
