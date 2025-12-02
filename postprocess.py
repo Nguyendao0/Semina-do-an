@@ -12,7 +12,7 @@ def validate_input(text: str):
     if not text or len(text.strip()) == 0:
         return False, "Câu nhập vào đang trống!"
 
-    if len(text.strip()) < 1:
+    if len(text.strip()) < 2:
         return False, "Câu quá ngắn, vui lòng nhập dài hơn!"
     
     if len(text.strip()) > 500:

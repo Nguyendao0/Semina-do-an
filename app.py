@@ -4,7 +4,7 @@
 import streamlit as st
 import pandas as pd
 from analyzer import analyze
-from database import save_history, get_history
+from database import save_history, get_history, clear_history
 
 st.set_page_config(
     page_title="Assistant phân loại cảm xúc",
@@ -14,74 +14,94 @@ st.set_page_config(
 st.title("Trợ lý phân loại cảm xúc Tiếng Việt")
 st.markdown("---")
 
-# 1. Nhập câu từ người dùng
-# -------------------------
+# ========================
+# 1. PHẦN NHẬP & PHÂN LOẠI
+# ========================
+
 def process_input():
+    """Phân loại cảm xúc từ input text"""
     text = st.session_state.text_input_sentiment
-    
     if not text.strip():
         return
     
     result = analyze(text)
-
-    # Lưu vào session state để hiển thị
     st.session_state.last_result = result
+    st.session_state.should_save = True
 
 
-# Nhập với callback (tự động khi Enter)
-st.text_input(
-    "Nhập câu tiếng Việt để phân loại cảm xúc:", 
-    key="text_input_sentiment",
-    on_change=process_input
-)
-
-if st.button("Phân loại cảm xúc"):
-    process_input()
-
-# Hiển thị kết quả (nếu có)
-if "last_result" in st.session_state:
-    result = st.session_state.last_result
-    
-    # Nếu lỗi
+def display_sentiment_result(result):
+    """Hiển thị kết quả phân loại với màu sắc"""
     if "error" in result:
         st.error(result["error"])
-    else:
-        sentiment = result["sentiment"]
-        score_percent = f"{result.get('score', 0.0) * 100:.2f}%"
-        
-        if sentiment == "POSITIVE":
-            st.success(f"🎉 Cảm xúc: {sentiment} (Độ tin cậy: {score_percent})")
-        elif sentiment == "NEGATIVE":
-            st.error(f"😞 Cảm xúc: {sentiment} (Độ tin cậy: {score_percent})")
-        else:
-            st.warning(f"😐 Cảm xúc: {sentiment} (Độ tin cậy: {score_percent})")
+        return
+    
+    sentiment = result["sentiment"]
+    score_percent = f"{result.get('score', 0.0) * 100:.2f}%"
+    
+    emoji_map = {
+        "POSITIVE": ("🎉", "success"),
+        "NEGATIVE": ("😞", "error"),
+        "NEUTRAL": ("😐", "warning")
+    }
+    
+    emoji, style = emoji_map.get(sentiment, ("😐", "warning"))
+    message = f"{emoji} Cảm xúc: {sentiment} (Độ tin cậy: {score_percent})"
+    
+    getattr(st, style)(message)
+    
+    # Lưu lịch sử
+    save_history(result["text"], sentiment, result.get("score", 0.0))
+    st.session_state.should_save = False
 
-        # Lưu lịch sử vào DB
-        save_history(result["text"], sentiment, result.get("score", 0.0))
 
-# 2. Hiển thị lịch sử phân loại
-# -------------------------
+with st.form("sentiment_form"):
+    st.text_input(
+        "Nhập câu tiếng Việt để phân loại cảm xúc:", 
+        key="text_input_sentiment"
+    )
+    
+    if st.form_submit_button("Phân loại cảm xúc"):
+        process_input()
+
+# Hiển thị kết quả nếu có
+if "last_result" in st.session_state and st.session_state.get('should_save', False):
+    display_sentiment_result(st.session_state.last_result)
+
+# ========================
+# 2. PHẦN LỊCH SỬ & XÓA
+# ========================
+
 st.subheader("📜 Lịch sử phân loại gần đây:")
+
+if st.button("🗑️ Xóa toàn bộ lịch sử"):
+    st.session_state['confirm_delete'] = True
+
+if st.session_state.get('confirm_delete', False):
+    st.warning("⚠️ Bạn có chắc muốn xóa toàn bộ? Hành động không thể hoàn tác.")
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        if st.button("✅ Có, xóa"):
+            clear_history()
+            st.session_state['confirm_delete'] = False
+            st.success("✅ Đã xóa toàn bộ lịch sử!")
+            st.rerun()
+    
+    with col2:
+        if st.button("❌ Không, hủy"):
+            st.session_state['confirm_delete'] = False
+            st.rerun()
 
 history = get_history()
 
 if len(history) == 0:
     st.info("Chưa có dữ liệu lịch sử.")
 else:
-    # Biến lịch sử JSON → DataFrame
     df = pd.DataFrame(history)
-
-    # Đổi tên cột cho đẹp
     df = df.rename(columns={
         "text": "Nội dung",
         "sentiment": "Kết quả",
-        "time": "Thời gian",
+        "created_at": "Thời gian",
         "score": "Điểm số"
     })
-
-    # Hiển thị bảng có scrollbar
-    st.dataframe(
-        df,
-        use_container_width=True,
-        hide_index=True
-    )
+    st.dataframe(df, width='stretch', hide_index=True)
