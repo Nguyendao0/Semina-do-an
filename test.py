@@ -1,13 +1,6 @@
-from analyzer import analyze
+from database import save_history, get_history
 
-cases = [
-    "Hôm nay tôi rất vui",
-    "Buồn quá...",
-    "Mk ko biết nữa",
-    "Tệ vl",
-    "Tuyệt vời luôn!",
-    "Ok"
-]
+save_history("Hôm nay tôi vui", "POSITIVE")
+save_history("Buồn quá", "NEGATIVE")
 
-for c in cases:
-    print(c, "→", analyze(c))
+print(get_history())

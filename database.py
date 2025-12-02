@@ -1,54 +1,58 @@
-# database.py
-import sqlite3
+# database.py (JSON version)
+
+import json
 from datetime import datetime
 import os
 
-DB_PATH = "data/history.db"
+DB_PATH = "data/history.json"
 
-# Tạo thư mục data nếu chưa tồn tại
-os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
-
+# -------------------------
+# 1. Khởi tạo file JSON
+# -------------------------
 def init_db():
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    # Tạo bảng history gồm: id, câu gốc, kết quả, điểm số, thời gian
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS history (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            text TEXT,
-            sentiment TEXT,
-            score REAL,
-            created_at TIMESTAMP
-        )
-    ''')
-    conn.commit()
-    conn.close()
+    # Nếu chưa có file, tạo file rỗng dạng list
+    if not os.path.exists("data"):
+        os.makedirs("data")
 
+    if not os.path.exists(DB_PATH):
+        with open(DB_PATH, "w", encoding="utf-8") as f:
+            json.dump([], f, ensure_ascii=False, indent=4)
+
+
+# -------------------------
+# 2. Lưu 1 entry lịch sử
+# -------------------------
 def save_history(text, sentiment, score=0.0):
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
+    # Đọc dữ liệu hiện tại
+    with open(DB_PATH, "r", encoding="utf-8") as f:
+        data = json.load(f)
 
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # Tạo bản ghi mới
+    record = {
+        "text": text,
+        "sentiment": sentiment,
+        "score": round(score, 4),  # Làm tròn 4 chữ số
+        "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
 
-    cursor.execute(
-        "INSERT INTO history(text, sentiment, score, created_at) VALUES (?, ?, ?, ?)",
-        (text, sentiment, score, timestamp)
-    )
+    # Thêm vào danh sách
+    data.append(record)
 
-    conn.commit()
-    conn.close()
+    # Ghi lại file
+    with open(DB_PATH, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
 
+
+# -------------------------
+# 3. Lấy toàn bộ lịch sử
+# -------------------------
 def get_history():
-    
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
+    with open(DB_PATH, "r", encoding="utf-8") as f:
+        data = json.load(f)
 
-    cursor.execute("SELECT * FROM history ORDER BY id DESC")
+    # Đảo ngược để hiện bản mới nhất trước
+    return list(reversed(data))
 
-    rows = cursor.fetchall()
-    conn.close()
 
-    return rows
-
-# Tạo DB ngay khi import
+# Khởi tạo file JSON khi import module
 init_db()
