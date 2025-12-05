@@ -7,23 +7,13 @@ class SentimentClassifier:
     MAX_TEXT_LENGTH = 100    # Tối đa 100 ký tự
     
     def __init__(self):
-        # --- LÝ DO CHỌN MODEL NÀY ---
-        # Thay vì dùng 'vinai/phobert-base-v2' (chưa biết phân loại cảm xúc),
-        # ta dùng model của 'wonrax'. Đây thực chất là PhoBERT nhưng đã được
-        # dạy trước (fine-tuned) hàng ngàn câu review tiếng Việt.
-        # -> Giúp đạt độ chính xác > 80% ngay lập tức mà không cần train lại.
+
         self.model_name = "wonrax/phobert-base-vietnamese-sentiment"
         
-        print(f"⏳ Đang tải model {self.model_name}...")
+        print(f"Đang tải model {self.model_name}...")
         
-        # --- TẠI SAO DÙNG PIPELINE? ---
-        # Pipeline là công cụ "mì ăn liền" của Hugging Face.
-        # Nó tự động làm 3 việc:
-        # 1. Tokenize (biến chữ thành số)
-        # 2. Model Inference (chạy mô hình)
-        # 3. Post-processing (biến kết quả số thành nhãn POS/NEG)
         self.pipe = pipeline("sentiment-analysis", model=self.model_name)
-        print("✅ Đã tải model thành công!")
+        print("Đã tải model thành công!")
 
     def check_text_length(self, text: str) -> dict:
         """
@@ -35,28 +25,25 @@ class SentimentClassifier:
         if text_length < self.MIN_TEXT_LENGTH:
             return {
                 'is_valid': False,
-                'message': f'❌ Text quá ngắn! Tối thiểu {self.MIN_TEXT_LENGTH} ký tự (hiện tại: {text_length})',
+                'message': f'Text quá ngắn! Tối thiểu {self.MIN_TEXT_LENGTH} ký tự (hiện tại: {text_length})',
                 'length': text_length
             }
         
         if text_length > self.MAX_TEXT_LENGTH:
             return {
                 'is_valid': False,
-                'message': f'❌ Text quá dài! Tối đa {self.MAX_TEXT_LENGTH} ký tự (hiện tại: {text_length})',
+                'message': f'Text quá dài! Tối đa {self.MAX_TEXT_LENGTH} ký tự (hiện tại: {text_length})',
                 'length': text_length
             }
         
         return {
             'is_valid': True,
-            'message': f'✅ Độ dài hợp lệ ({text_length} ký tự)',
+            'message': f'Độ dài hợp lệ ({text_length} ký tự)',
             'length': text_length
         }
 
     def predict(self, text):
-        """
-        Input: Câu tiếng Việt (đã qua xử lý ở preprocess.py)
-        Output: Dictionary {label, score}
-        """
+
         # Kiểm tra độ dài text
         length_check = self.check_text_length(text)
         if not length_check['is_valid']:
@@ -74,11 +61,6 @@ class SentimentClassifier:
             
             raw_label = result['label'] # Ví dụ: 'POS'
             score = result['score']     # Ví dụ: 0.98
-
-            # --- TẠI SAO PHẢI CÓ ĐOẠN IF-ELSE NÀY? ---
-            # Model trả về 'POS'/'NEG'/'NEU' (ngôn ngữ của model).
-            # Nhưng Đề Bài yêu cầu trả về 'POSITIVE'/'NEGATIVE' (ngôn ngữ của đề bài).
-            # -> Ta cần lớp "phiên dịch" (Mapping) này.
             
             final_label = "NEUTRAL" # Mặc định là trung tính cho an toàn
             
@@ -89,8 +71,7 @@ class SentimentClassifier:
             elif raw_label == 'NEU':
                 final_label = "NEUTRAL"
 
-            # --- XỬ LÝ THEO YÊU CẦU ĐẶC BIỆT CỦA ĐỀ ---
-            # Đề bài yêu cầu: Nếu độ tin cậy thấp (< 0.5), hãy coi là trung tính.
+            # Nếu độ tin cậy thấp (< 0.5), hãy coi là trung tính.
             if score < 0.5:
                 final_label = "NEUTRAL"
 
@@ -102,8 +83,3 @@ class SentimentClassifier:
         except Exception as e:
             print(f"❌ Lỗi phân loại: {e}")
             return {"label": "ERROR", "score": 0.0}
-
-# --- PHẦN CHẠY THỬ ---
-if __name__ == "__main__":
-    clf = SentimentClassifier()
-    print(clf.predict("hôm_nay tôi rất vui"))

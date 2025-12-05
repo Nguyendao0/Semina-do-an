@@ -1,4 +1,4 @@
-# database.py (SQLite version)
+# database.py
 
 import sqlite3
 from datetime import datetime
@@ -7,9 +7,8 @@ import os
 DB_DIR = "data"
 DB_PATH = os.path.join(DB_DIR, "history.db")
 
-# -------------------------
 # 1. Khởi tạo Database SQLite
-# -------------------------
+
 def init_db():
     # Tạo thư mục data nếu chưa tồn tại
     if not os.path.exists(DB_DIR):
@@ -33,10 +32,8 @@ def init_db():
     conn.commit()
     conn.close()
 
-
-# -------------------------
 # 2. Lưu 1 entry lịch sử
-# -------------------------
+
 def save_history(text, sentiment, score=0.0):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -52,9 +49,8 @@ def save_history(text, sentiment, score=0.0):
     conn.close()
 
 
-# -------------------------
 # 3. Lấy toàn bộ lịch sử
-# -------------------------
+
 def get_history():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row  # Trả về dict thay vì tuple

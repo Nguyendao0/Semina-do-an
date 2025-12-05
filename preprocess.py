@@ -3,7 +3,7 @@ import re
 from underthesea import word_tokenize
 
 # -------------------------------
-# 1. Từ điển Teencode (Từ điển nhỏ 10-20 từ theo yêu cầu đồ án)
+# 1. Từ điển Teencode
 # -------------------------------
 TEENCODE_DICT = {
     "mk": "mình",
@@ -33,9 +33,8 @@ TEENCODE_DICT = {
     "vuii": "vui"
 }
 
-# -------------------------------
 # 2. Các hàm xử lý thành phần
-# -------------------------------
+
 
 def lowercase_text(text: str) -> str:
     """Chuyển toàn bộ văn bản về chữ thường."""
@@ -63,9 +62,8 @@ def tokenize_vietnamese(text: str) -> str:
     """
     return word_tokenize(text, format="text")
 
-# -------------------------------
 # 3. Hàm Preprocess Tổng Hợp (Main Pipeline)
-# -------------------------------
+
 def preprocess_text(text: str) -> str:
     """
     Hàm chính để gọi từ bên ngoài.
@@ -87,18 +85,3 @@ def preprocess_text(text: str) -> str:
     text = tokenize_vietnamese(text)
     
     return text
-
-# --- Block kiểm thử (Chỉ chạy khi bạn run trực tiếp file này) ---
-if __name__ == "__main__":
-    print("--- TEST MODULE PREPROCESS ---")
-    samples = [
-        "Hôm nay mk rat vui",           # Test teencode + không dấu
-        "San pham nay dung ko tot!!!",  # Test teencode + dấu câu
-        "Món ăn dở wa trơi oi",         # Test teencode
-        "Giao hàng chậm, thái độ lồi lõm" # Test từ ghép (lồi lõm)
-    ]
-
-    for s in samples:
-        print(f"Gốc:   {s}")
-        print(f"Xử lý: {preprocess_text(s)}")
-        print("-" * 30)

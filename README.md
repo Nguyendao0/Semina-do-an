@@ -1,19 +1,30 @@
-# 🎯 Trợ lý Phân Loại Cảm Xúc Tiếng Việt
+# Trợ lý Phân Loại Cảm Xúc Tiếng Việt
 
 Ứng dụng web dùng **PhoBERT** để phân loại cảm xúc câu tiếng Việt thành: **POSITIVE** (Tích cực), **NEGATIVE** (Tiêu cực), hoặc **NEUTRAL** (Trung tính).
 
 ---
 
-## 📋 Yêu Cầu Hệ Thống
+## Yêu Cầu Hệ Thống
 
-- **Python *3.10.11+** ([Tải tại đây](https://www.python.org/))
+- **Python *3.10.11** ([Tải tại đây](https://www.python.org/))
 - **Git** (để clone repo)
 - **RAM**: Tối thiểu 4GB (model PhoBERT khá nặng)
 
 ---
 
-## 🚀 Hướng Dẫn Cài Đặt & Chạy (Quickstart)
+## Hướng Dẫn Cài Đặt & Chạy (Quickstart)
 
+### **Cách 1: chạy file run_app.bat**
+### **Bước 1: Clone Repository**
+```bash
+git clone https://github.com/Nguyendao0/Semina-do-an.git
+cd Semina-do-an
+```
+### **Bước 2: chạy run_app.bat**
+Mở thư mục Semina-do-an
+Nháy đúp chuột file run_app.bat
+
+### **Cách 2: chạy ứng dụng từng bước **
 ### **Bước 1: Clone Repository**
 ```bash
 git clone https://github.com/Nguyendao0/Semina-do-an.git
@@ -35,14 +46,14 @@ source venv/bin/activate
 ```bash
 pip install -r requirements.txt
 ```
-⏳ **Lưu ý:** Lần đầu sẽ mất **5-10 phút** do tải model PhoBERT (~1.5GB)
+**Lưu ý:** Lần đầu sẽ mất **5-10 phút** do tải model PhoBERT (~1.5GB)
 
 ### **Bước 4: Chạy Ứng Dụng**
 ```bash
 streamlit run app.py
 ```
 
-✅ Ứng dụng sẽ tự mở tại: `http://localhost:8501`
+Ứng dụng sẽ tự mở tại: `http://localhost:8501`
 
 ---
 

@@ -14,10 +14,10 @@ def analyze(text: str):
     # 2. Preprocess
     processed = preprocess_text(text)
 
-    # 3. PhoBERT classify → trả về {'label': 'POSITIVE', 'score': 0.99}
+    # 3. PhoBERT classify
     result = clf.predict(processed)
 
-    # 4. Transform result để match app.py expectation
+    # 4. Transform result
     return {
         "text": text,
         "sentiment": result.get("label", "NEUTRAL"),

@@ -1,8 +1,7 @@
-# postprocess.py
 
-# -----------------------------
+
 # 1. Validation input
-# -----------------------------
+
 def validate_input(text: str):
     """
     Kiểm tra:
@@ -24,9 +23,8 @@ def validate_input(text: str):
     return True, None
 
 
-# -----------------------------
 # 2. Chuẩn hóa nhãn PhoBERT
-# -----------------------------
+
 def normalize_label(label_id: int) -> str:
     """
     PhoBERT-base-v2 (Sentiment) thường trả về:
@@ -42,9 +40,8 @@ def normalize_label(label_id: int) -> str:
         return "POSITIVE"
 
 
-# -----------------------------
 # 3. Áp dụng logic theo confidence score
-# -----------------------------
+
 def adjust_by_score(sentiment: str, score: float) -> str:
     """
     Nếu độ tự tin thấp, chuyển sang NEUTRAL
@@ -55,9 +52,8 @@ def adjust_by_score(sentiment: str, score: float) -> str:
     return sentiment
 
 
-# -----------------------------
 # 4. Tạo dictionary đầu ra chuẩn
-# -----------------------------
+
 def build_output(original_text: str, sentiment: str):
     return {
         "text": original_text,
@@ -65,9 +61,8 @@ def build_output(original_text: str, sentiment: str):
     }
 
 
-# -----------------------------
 # 5. HÀM TỔNG HỢP POSTPROCESSING
-# -----------------------------
+
 def postprocess(original_text: str, label_id: int, score: float):
     # 1. Chuẩn hóa nhãn từ PhoBERT
     sentiment = normalize_label(label_id)

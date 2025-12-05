@@ -1,5 +1,4 @@
 # Giao diện Streamlit
-# app.py
 
 import streamlit as st
 import pandas as pd
@@ -14,9 +13,7 @@ st.set_page_config(
 st.title("Trợ lý phân loại cảm xúc Tiếng Việt")
 st.markdown("---")
 
-# ========================
 # 1. PHẦN NHẬP & PHÂN LOẠI
-# ========================
 
 def process_input():
     """Phân loại cảm xúc từ input text"""
@@ -67,9 +64,7 @@ with st.form("sentiment_form"):
 if "last_result" in st.session_state and st.session_state.get('should_save', False):
     display_sentiment_result(st.session_state.last_result)
 
-# ========================
 # 2. PHẦN LỊCH SỬ & XÓA
-# ========================
 
 st.subheader("📜 Lịch sử phân loại gần đây:")
 
