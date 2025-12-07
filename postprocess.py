@@ -14,8 +14,8 @@ def validate_input(text: str):
     if len(text.strip()) < 2:
         return False, "Câu quá ngắn, vui lòng nhập dài hơn!"
     
-    if len(text.strip()) > 500:
-        return False, "Câu quá dài, tối đa 500 ký tự."
+    if len(text.strip()) > 100:
+        return False, "Câu quá dài, tối đa 100 ký tự."
     
     if all(c in "!?.,;: \n\t" for c in text.strip()):
         return False, "Vui lòng nhập text có ý nghĩa, không phải toàn dấu câu!"
